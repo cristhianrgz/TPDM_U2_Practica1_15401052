@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="20dp"
+    tools:context=".Main2Activity">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Creación de Listas"
+        android:textSize="25dp"
+        android:textStyle="bold"
+        android:layout_marginTop="25dp"
+        />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Descripción"
+        android:textSize="20dp"
+        android:layout_marginTop="20dp"
+        />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="20dp"
+        android:id="@+id/editDescripLista"
+        />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Fecha"
+        android:textSize="20dp"
+        android:layout_marginTop="25dp"
+        />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="20dp"
+        android:hint="Ingresar una fecha"
+        android:id="@+id/editFecha"
+        android:inputType="date"
+        android:layout_marginBottom="10dp"
+        />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        >
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Insertar"
+            android:textSize="20dp"
+            android:id="@+id/btnInsertarLista2"
+            android:background="#95D8F5"
+            android:layout_marginLeft="15dp"
+            />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Actualizar"
+            android:textSize="20dp"
+            android:id="@+id/btnActualizarLista"
+            android:background="#95D8F5"
+            android:layout_marginLeft="15dp"
+            />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Buscar"
+            android:textSize="20dp"
+            android:id="@+id/btnBuscarLista"
+            android:background="#95D8F5"
+            android:layout_marginLeft="15dp"
+            />
+
+    </LinearLayout>
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Regresar"
+        android:id="@+id/btnRegresar"
+        android:textSize="20dp"
+        android:background="#E7DAB7"
+        android:layout_marginTop="5dp"
+        />
+
+    <TextView
+        android:id="@+id/listaConsulta"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Mostrar consulta de lista"
+        android:textSize="25dp"
+        android:textStyle="bold"
+        android:layout_marginTop="25dp"/>
+
+    <TextView
+        android:id="@+id/etiquetaMostrar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        android:textSize="20dp"
+        android:textAlignment="center"
+        android:layout_marginTop="10dp"/>
+
+
+
+
+</LinearLayout>

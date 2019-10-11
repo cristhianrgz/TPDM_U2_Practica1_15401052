@@ -68,19 +68,59 @@
         android:textSize="20dp"
         android:hint="Ingresar una fecha"
         android:id="@+id/editRealizado"
+        android:inputType="date"
         />
 
-    <Button
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Insertar tareas"
-        android:textSize="20dp"
-        android:id="@+id/btnInsertarTarea"
+        android:layout_marginTop="20dp">
+
+        <Button
+            android:id="@+id/btnInsertarTarea"
+            android:layout_width="107dp"
+            android:layout_height="wrap_content"
+            android:background="#95D8F5"
+            android:text="Insertar"
+            android:textSize="20dp" />
+
+        <Button
+            android:id="@+id/btnBuscarTarea"
+            android:layout_width="123dp"
+            android:layout_height="wrap_content"
+            android:background="#95D8F5"
+            android:text="Buscar"
+            android:textSize="20dp"
+            android:layout_marginLeft="15dp"
+            />
+
+        <Button
+            android:id="@+id/btnEliminarTareas"
+            android:layout_width="113dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:background="#E74F73"
+            android:text="Regresar"
+            android:textSize="20dp" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/listaConsultaTarea"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Mostrar consulta de tareas"
+        android:textSize="25dp"
+        android:textStyle="bold"
+        android:layout_marginTop="25dp"
         />
 
-
-
-
-
+    <TextView
+        android:id="@+id/etiquetaMostrar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        android:textSize="20dp"
+        android:layout_marginTop="10dp"
+        />
 
 </LinearLayout>

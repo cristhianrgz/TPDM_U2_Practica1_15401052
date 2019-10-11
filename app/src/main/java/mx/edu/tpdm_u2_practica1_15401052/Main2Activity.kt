@@ -24,7 +24,7 @@ class Main2Activity : AppCompatActivity() {
     var actualizar : Button ?= null
     var etiquetaMos : TextView ?= null
     var buscar : Button ?= null
-    var cont = 0
+
     var basedatos = BaseDatos(this,"practica1", null, 1)
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,11 +48,11 @@ class Main2Activity : AppCompatActivity() {
         }
 
         actualizar?.setOnClickListener {
-            if(actualizar?.text.toString().startsWith("Actualizar")){
-                pedirID(actualizar?.text.toString())
+            if(actualizar?.text.toString().startsWith("Aplicar cambios")){
+                aplicarCambios()
             }
             else{
-                aplicarCambios()
+                pedirID(actualizar?.text.toString())
             }
         }
 
@@ -117,22 +117,13 @@ class Main2Activity : AppCompatActivity() {
                     etiquetaMos?.setText(cadena)
                 }
 
-                if (btnEtiqueta.startsWith("Eliminar")){
-                    var cadena = "SEGURO QUE DESEA ELIMINAR A LA LISTA [ "+respuesta.getString(1)+" ] CON ID [ "+respuesta.getString(0)+" ]"
-                    var alerta = AlertDialog.Builder(this)
-                    AlertDialog.Builder(this)
-                    alerta.setTitle("ATENCION").setMessage(cadena).setNeutralButton("NO"){dialog,which->
-                        return@setNeutralButton
-                    }.setPositiveButton("si"){dialog,which->
-                        //eliminar(id)
-                    }.show()
-                }
-
                 if(btnEtiqueta.startsWith("Actualizar")){
                     descripLista?.setText(respuesta.getString(1))
                     fechaLista?.setText(respuesta.getString(2))
                     actualizar?.setText("Aplicar cambios")
                     insertarLista?.setEnabled(false)
+                    buscar?.setEnabled(false)
+                    regresar?.setEnabled(false)
                 }
             }else{
                 mensaje("ERROR","NO EXISTE EL ID")
@@ -140,7 +131,6 @@ class Main2Activity : AppCompatActivity() {
         }catch (err: SQLException){
             mensaje("ERROR","NO SE PUDO ENCONTRAR EL REGISTRO")
         }
-
     }
 
     fun actualizar(){
@@ -159,7 +149,7 @@ class Main2Activity : AppCompatActivity() {
             desbloquear()
             mensaje("EXITO","Se actualizo correctamente")
         }catch (err:SQLiteException){
-            mensaje("ERROR", "No se pudo actualizar el registro")
+            mensaje("ERROR", "No se pudo actualizar el registro"+err)
         }
     }
 
@@ -173,6 +163,8 @@ class Main2Activity : AppCompatActivity() {
     fun desbloquear(){
         actualizar?.setText("Actualizar")
         insertarLista?.isEnabled = true
+        buscar?.isEnabled = true
+        regresar?.isEnabled = true
         limpiarCampos()
     }
 

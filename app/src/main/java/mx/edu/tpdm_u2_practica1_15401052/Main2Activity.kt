@@ -6,10 +6,7 @@ import android.database.sqlite.SQLiteException
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.InputType
-import android.widget.Button
-import android.widget.EditText
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import kotlinx.android.synthetic.main.activity_main2.*
 import java.sql.SQLException
@@ -24,8 +21,10 @@ class Main2Activity : AppCompatActivity() {
     var actualizar : Button ?= null
     var etiquetaMos : TextView ?= null
     var buscar : Button ?= null
-    var mostrarTodos :TextView ?= null
-    var columns : TextView ?= null
+    var listasView : ListView ?= null
+    //---------------------------------------------------------------------------------
+    var listasMain2: ArrayList<String> = ArrayList()
+
     var basedatos = BaseDatos(this,"practica1", null, 1)
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,9 +38,8 @@ class Main2Activity : AppCompatActivity() {
         actualizar = findViewById(R.id.btnActualizarLista)
         etiquetaMos = findViewById(R.id.etiquetaMostrar)
         buscar = findViewById(R.id.btnBuscarLista)
-        mostrarTodos = findViewById(R.id.etMostrarTodos)
-        columns = findViewById(R.id.etColumns)
-        buscarGeneral()
+        listasView = findViewById(R.id.listasRegistradasMain2)
+        consultaGeneralListas()
 
         insertarLista?.setOnClickListener {
             insertar()
@@ -136,27 +134,20 @@ class Main2Activity : AppCompatActivity() {
         }
     }
 
-    fun buscarGeneral(){
-        var obtenerTodasL = ""
+    //FUNCION PARA LISTVIEW LISTAS
+    fun consultaGeneralListas(){
         try {
-            var transaccion = basedatos.readableDatabase
-            var SQL="SELECT * FROM LISTA"
-            var  respuesta = transaccion.rawQuery(SQL,null)
-            var column = "ID     "+"Descripción    "+"Fecha de creación"
-            etColumns?.setText(column)
-            if(respuesta !=null){
+                var transaccion = basedatos.writableDatabase
+                var SQL="SELECT * FROM LISTA"
+                var  respuesta = transaccion.rawQuery(SQL,null)
                 if (respuesta.moveToFirst()==true){
                     do{
-                        obtenerTodasL +=respuesta.getString(0)+"      "+respuesta.getString(1)+"        "+respuesta.getString(2)+"\n"
+                        listasMain2.add(respuesta.getString(0)+"      "+respuesta.getString(1)+"        "+respuesta.getString(2))
                     }while(respuesta.moveToNext())
-                    etMostrarTodos?.setText(obtenerTodasL)
-                }else{
-                    obtenerTodasL = "No hay registros para mostrar."
-                    etMostrarTodos.setText(obtenerTodasL)
                 }
-            }
-            respuesta.close()
-
+                respuesta.close()
+                val adapter = ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, listasMain2)
+                listasRegistradasMain2?.setAdapter(adapter);
 
         }catch (err: SQLiteException){
             mensaje("ERROR","NO se pudo ejecutar la consulta")

@@ -11,19 +11,23 @@ import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_main2.*
 import org.w3c.dom.Text
 import java.sql.SQLException
+import android.widget.ArrayAdapter
+
+
 
 class MainActivity : AppCompatActivity() {
 
     var btnInsertLista : Button ?= null
-    var mostrarListas : ListView ?= null
+    var mostrarListasView : ListView ?= null
     var descripTarea : EditText ?= null
     var realizadoTarea : EditText ?= null
     var btnInsertTareas : Button ?= null
     var btnEliminarTareas : Button ?= null
     var mostrarTarea : TextView ?= null
     var btnBuscarTarea : Button ?= null
-    var mostrarTodasT : TextView ?= null
-    var etColumns : TextView ?= null
+    var mostrarTareasView : ListView ?= null
+    //---------------------------------
+    var tareas: ArrayList<String> = ArrayList()
     var cadena = ""
 
     var basedatos = BaseDatos(this,"practica1", null, 1)
@@ -32,16 +36,14 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         btnInsertLista = findViewById(R.id.btnInsertLista)
-        mostrarListas = findViewById(R.id.listasCreadas)
         descripTarea = findViewById(R.id.editDescripTarea)
         realizadoTarea = findViewById(R.id.editRealizado)
         btnInsertTareas = findViewById(R.id.btnInsertarTarea)
         btnEliminarTareas = findViewById(R.id.btnEliminarTareas)
         mostrarTarea = findViewById(R.id.etiquetaMostrarTarea)
         btnBuscarTarea = findViewById(R.id.btnBuscarTarea)
-        mostrarTodasT = findViewById(R.id.etiquetaMostrarTodosT)
-        etColumns = findViewById(R.id.etiquetaColumns)
-        buscarGeneralTareas()
+        mostrarTareasView = findViewById(R.id.tareasRegitradas)
+        consultaGeneralTareas()
 
         btnInsertLista?.setOnClickListener {
             val ventanaInsert = Intent(this, Main2Activity::class.java)
@@ -49,7 +51,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         btnInsertTareas?.setOnClickListener{
-            pedirDescrip(btnInsertTareas?.text.toString())
+            pedirIDInsert(btnInsertTareas?.text.toString())
         }
 
         btnEliminarTareas?.setOnClickListener{
@@ -85,22 +87,22 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun pedirDescrip(etiqueta:String){
+    fun pedirIDInsert(etiqueta:String){
         var campo = EditText(this)
 
-        AlertDialog.Builder(this).setTitle("ATENCION").setMessage("ESCRIBA LA LISTA A DONDE SE VA A ${etiqueta} LA TAREA: ").setView(campo)
+        AlertDialog.Builder(this).setTitle("ATENCION").setMessage("ESCRIBA EL ID DE LISTA A DONDE SE VA A ${etiqueta} LA TAREA: ").setView(campo)
             .setPositiveButton("OK"){dialog,which->
                 if(validarCampo(campo) == false){
                     Toast.makeText(this@MainActivity, "ERROR CAMPO VACÍO", Toast.LENGTH_LONG).show()
                     return@setPositiveButton
                 }
-                buscarDescrip(campo.text.toString(),etiqueta)
+                buscarIDInsert(campo.text.toString(),etiqueta)
 
 
             }.setNeutralButton("CANCELAR"){dialog, which ->  }.show()
     }
 
-    fun buscarDescrip(id: String, btnEtiqueta: String){
+    fun buscarIDInsert(id: String, btnEtiqueta: String){
         try {
             var transaccion = basedatos.readableDatabase
             var SQL="SELECT * FROM LISTA WHERE IDLISTA="+id
@@ -121,7 +123,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
     //------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
 
     fun eliminar(id:String){
         try{
@@ -184,32 +185,24 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun buscarGeneralTareas(){
-        var obtenerTodasT = ""
+    fun consultaGeneralTareas(){
         try {
-            var transaccion = basedatos.readableDatabase
-            var SQL="SELECT * FROM TAREAS"
-            var  respuesta = transaccion.rawQuery(SQL,null)
-            var column ="        Descrip        "+"Realizado     "+"ID de lista"
-            etiquetaColumns?.setText(column)
-            if(respuesta !=null){
+                var transaccion = basedatos.writableDatabase
+                var SQL="SELECT * FROM TAREAS"
+                var  respuesta = transaccion.rawQuery(SQL,null)
                 if (respuesta.moveToFirst()==true){
                     do{
-                        obtenerTodasT +=respuesta.getString(0)+"      "+respuesta.getString(1)+"        "+respuesta.getString(2)+"        "+respuesta.getString(3)+"\n"
+                        tareas.add(respuesta.getString(0) + " - " + respuesta.getString(1)+" - " + respuesta.getString(2)+" - " + respuesta.getString(3))
                     }while(respuesta.moveToNext())
-                    etiquetaMostrarTodosT?.setText(obtenerTodasT)
-                }else{
-                    obtenerTodasT = "No hay registros para mostrar."
-                    etMostrarTodos.setText(obtenerTodasT)
                 }
-            }
-            respuesta.close()
-
-
+                respuesta.close()
+                 val adapter = ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, tareas)
+                mostrarTareasView?.setAdapter(adapter);
         }catch (err: SQLiteException){
             mensaje("ERROR","NO se pudo ejecutar la consulta")
         }
     }
+
     //VALIDACIONES
     fun  validarCampos():Boolean{
         if(descripTarea?.text!!.isEmpty() || realizadoTarea?.text!!.isEmpty()){

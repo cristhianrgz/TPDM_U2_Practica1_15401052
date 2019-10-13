@@ -9,6 +9,7 @@ import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_main2.*
+import org.w3c.dom.Text
 import java.sql.SQLException
 
 class MainActivity : AppCompatActivity() {
@@ -21,6 +22,8 @@ class MainActivity : AppCompatActivity() {
     var btnEliminarTareas : Button ?= null
     var mostrarTarea : TextView ?= null
     var btnBuscarTarea : Button ?= null
+    var mostrarTodasT : TextView ?= null
+    var etColumns : TextView ?= null
     var cadena = ""
 
     var basedatos = BaseDatos(this,"practica1", null, 1)
@@ -34,8 +37,11 @@ class MainActivity : AppCompatActivity() {
         realizadoTarea = findViewById(R.id.editRealizado)
         btnInsertTareas = findViewById(R.id.btnInsertarTarea)
         btnEliminarTareas = findViewById(R.id.btnEliminarTareas)
-        mostrarTarea = findViewById(R.id.etiquetaMostrar)
+        mostrarTarea = findViewById(R.id.etiquetaMostrarTarea)
         btnBuscarTarea = findViewById(R.id.btnBuscarTarea)
+        mostrarTodasT = findViewById(R.id.etiquetaMostrarTodosT)
+        etColumns = findViewById(R.id.etiquetaColumns)
+        buscarGeneralTareas()
 
         btnInsertLista?.setOnClickListener {
             val ventanaInsert = Intent(this, Main2Activity::class.java)
@@ -66,15 +72,13 @@ class MainActivity : AppCompatActivity() {
                     return
                 }
 
-                SQL = SQL.replace("DESCRIPCION",editDescripLista?.text.toString())
-                SQL = SQL.replace("REALIZADO",editFecha?.text.toString())
+                SQL = SQL.replace("DESCRIPCION",descripTarea?.text.toString())
+                SQL = SQL.replace("REALIZADO",realizadoTarea?.text.toString())
                 SQL = SQL.replace("IDLISTA",cadena)
 
                 transacion.execSQL(SQL)
-                mensaje("EXITO", "SE INSERTO CORRECTAMENTE ")
                 transacion.close()
-
-                mensaje("EXITO", "SE INSERTO CORRECTAMENTE")
+                mensaje("EXITO", "SE INSERTO CORRECTAMENTE ")
                 limpiarCampos()
         }catch (err: SQLiteException){
             mensaje("Error", "NO SE PUDO INSERTAR TALVEZ EL ID YA EXISTE")
@@ -96,13 +100,12 @@ class MainActivity : AppCompatActivity() {
             }.setNeutralButton("CANCELAR"){dialog, which ->  }.show()
     }
 
-    fun buscarDescrip(descrip:String, btnEtiqueta: String){
+    fun buscarDescrip(id: String, btnEtiqueta: String){
         try {
             var transaccion = basedatos.readableDatabase
-            var SQL="SELECT IDLISTA FROM LISTA WHERE DESCRIPCION="+descrip
-
+            var SQL="SELECT * FROM LISTA WHERE IDLISTA="+id
             var  respuesta = transaccion.rawQuery(SQL,null)
-
+            print(SQL)
             if (respuesta.moveToFirst()==true){
                 cadena = respuesta.getString(0)
 
@@ -151,20 +154,21 @@ class MainActivity : AppCompatActivity() {
     fun buscar(id:String, btnEtiqueta: String){
         try {
             var transaccion = basedatos.readableDatabase
-            var SQL="SELECT *  FROM TAREAS WHERE IDTAREA="+id
+            var SQL="SELECT * FROM TAREAS WHERE IDTAREA="+id
 
             var  respuesta = transaccion.rawQuery(SQL,null)
 
             if (respuesta.moveToFirst()==true){
-                var cadena = "DESCRIPCION: " + respuesta.getString(1)+"\nREALIZADO: "+respuesta.getString(2)
+                var cadena = "DESCRIPCION: " + respuesta.getString(1)+"\nREALIZADO: "+respuesta.getString(2)+"\nID de la lista: "+respuesta.getString(3)
 
                 //DEPENDIENDO EL BOTON PRESIONADO (BUSCAR, ELIMINAR O ACTUALIZAR) ES LA ACCION QUE REALIZARA
                 if (btnEtiqueta.startsWith("Buscar")) {
+
                     mostrarTarea?.setText(cadena)
                 }
 
                 if (btnEtiqueta.startsWith("Eliminar")){
-                    var cadena = "¿SEGURO QUE DESEA ELIMINAR A [ "+respuesta.getString(1)+" ] CON ID [ "+respuesta.getString(0)+" ] ?"
+                    var cadena = "¿SEGURO QUE DESEA ELIMINAR [ "+respuesta.getString(1)+" ] CON ID [ "+respuesta.getString(0)+" ] ?"
                     var alerta = AlertDialog.Builder(this)
                     alerta.setTitle("ATENCION").setMessage(cadena).setNeutralButton("NO"){dialog,which->
                         return@setNeutralButton
@@ -179,9 +183,36 @@ class MainActivity : AppCompatActivity() {
             mensaje("ERROR","NO SE PUDO ENCONTRAR EL REGISTRO")
         }
     }
+
+    fun buscarGeneralTareas(){
+        var obtenerTodasT = ""
+        try {
+            var transaccion = basedatos.readableDatabase
+            var SQL="SELECT * FROM TAREAS"
+            var  respuesta = transaccion.rawQuery(SQL,null)
+            var column ="        Descrip        "+"Realizado     "+"ID de lista"
+            etiquetaColumns?.setText(column)
+            if(respuesta !=null){
+                if (respuesta.moveToFirst()==true){
+                    do{
+                        obtenerTodasT +=respuesta.getString(0)+"      "+respuesta.getString(1)+"        "+respuesta.getString(2)+"        "+respuesta.getString(3)+"\n"
+                    }while(respuesta.moveToNext())
+                    etiquetaMostrarTodosT?.setText(obtenerTodasT)
+                }else{
+                    obtenerTodasT = "No hay registros para mostrar."
+                    etMostrarTodos.setText(obtenerTodasT)
+                }
+            }
+            respuesta.close()
+
+
+        }catch (err: SQLiteException){
+            mensaje("ERROR","NO se pudo ejecutar la consulta")
+        }
+    }
     //VALIDACIONES
     fun  validarCampos():Boolean{
-        if(editDescripLista?.text!!.isEmpty() || editFecha?.text!!.isEmpty()){
+        if(descripTarea?.text!!.isEmpty() || realizadoTarea?.text!!.isEmpty()){
             return false
         }else{
             return true
@@ -197,8 +228,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun limpiarCampos(){
-        editDescripLista?.setText("")
-        editFecha?.setText("")
+        descripTarea?.setText("")
+        realizadoTarea?.setText("")
     }
 
     //función para AlertDialogs

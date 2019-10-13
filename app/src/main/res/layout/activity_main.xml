@@ -112,20 +112,47 @@
             android:id="@+id/listaConsultaTarea"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Mostrar consulta de tareas"
+            android:text="Mostrar consulta personal"
             android:textSize="25dp"
             android:textStyle="bold"
             android:layout_marginTop="25dp"
             />
 
         <TextView
-            android:id="@+id/etiquetaMostrar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textSize="20dp"
+            android:layout_marginTop="10dp"
+            android:id="@+id/etiquetaMostrarTarea"
+            />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Mostrar tareas registradas"
+            android:textSize="25dp"
+            android:textStyle="bold"
+            android:layout_marginTop="25dp"
+            />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textSize="20dp"
+            android:layout_marginTop="10dp"
+            android:id="@+id/etiquetaColumns"
+            />
+
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="TextView"
             android:textSize="20dp"
             android:layout_marginTop="10dp"
+            android:id="@+id/etiquetaMostrarTodosT"
             />
+
 
     </LinearLayout>
 

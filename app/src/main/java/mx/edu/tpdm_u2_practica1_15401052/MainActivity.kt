@@ -21,6 +21,7 @@ class MainActivity : AppCompatActivity() {
     var btnEliminarTareas : Button ?= null
     var mostrarTarea : TextView ?= null
     var btnBuscarTarea : Button ?= null
+    var cadena = ""
 
     var basedatos = BaseDatos(this,"practica1", null, 1)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,7 +43,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         btnInsertTareas?.setOnClickListener{
-            insertarTarea()
+            pedirDescrip(btnInsertTareas?.text.toString())
         }
 
         btnEliminarTareas?.setOnClickListener{
@@ -54,11 +55,11 @@ class MainActivity : AppCompatActivity() {
         }
 
     }
-
+//-------------------------------------------------- MÉTODOS PARA INSERTAR UNA TAREA ----------------------------------------------------
     fun insertarTarea(){
         try {
                 var transacion = basedatos.writableDatabase
-                var SQL = "INSERT INTO LISTA VALUES(null,'DESCRIPCION','REALIZADO',IDLISTA)"
+                var SQL = "INSERT INTO TAREAS VALUES(null,'DESCRIPCION','REALIZADO',IDLISTA)"
 
                 if(validarCampos() == false){
                     mensaje("ERROR", "AL PARECER HAY UN CAMPO DE TEXTO VACIO")
@@ -67,6 +68,8 @@ class MainActivity : AppCompatActivity() {
 
                 SQL = SQL.replace("DESCRIPCION",editDescripLista?.text.toString())
                 SQL = SQL.replace("REALIZADO",editFecha?.text.toString())
+                SQL = SQL.replace("IDLISTA",cadena)
+
                 transacion.execSQL(SQL)
                 mensaje("EXITO", "SE INSERTO CORRECTAMENTE ")
                 transacion.close()
@@ -77,6 +80,45 @@ class MainActivity : AppCompatActivity() {
             mensaje("Error", "NO SE PUDO INSERTAR TALVEZ EL ID YA EXISTE")
         }
     }
+
+    fun pedirDescrip(etiqueta:String){
+        var campo = EditText(this)
+
+        AlertDialog.Builder(this).setTitle("ATENCION").setMessage("ESCRIBA LA LISTA A DONDE SE VA A ${etiqueta} LA TAREA: ").setView(campo)
+            .setPositiveButton("OK"){dialog,which->
+                if(validarCampo(campo) == false){
+                    Toast.makeText(this@MainActivity, "ERROR CAMPO VACÍO", Toast.LENGTH_LONG).show()
+                    return@setPositiveButton
+                }
+                buscarDescrip(campo.text.toString(),etiqueta)
+
+
+            }.setNeutralButton("CANCELAR"){dialog, which ->  }.show()
+    }
+
+    fun buscarDescrip(descrip:String, btnEtiqueta: String){
+        try {
+            var transaccion = basedatos.readableDatabase
+            var SQL="SELECT IDLISTA FROM LISTA WHERE DESCRIPCION="+descrip
+
+            var  respuesta = transaccion.rawQuery(SQL,null)
+
+            if (respuesta.moveToFirst()==true){
+                cadena = respuesta.getString(0)
+
+                if (btnEtiqueta.startsWith("Insertar")) {
+                    insertarTarea()
+                }
+
+            }else{
+                mensaje("ERROR","NO EXISTE LA LISTA")
+            }
+        }catch (err: SQLException){
+            mensaje("ERROR","NO SE PUDO ENCONTRAR LA LISTA")
+        }
+    }
+    //------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 
     fun eliminar(id:String){
         try{

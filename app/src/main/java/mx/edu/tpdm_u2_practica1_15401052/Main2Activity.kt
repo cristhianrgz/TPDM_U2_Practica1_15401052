@@ -24,7 +24,8 @@ class Main2Activity : AppCompatActivity() {
     var actualizar : Button ?= null
     var etiquetaMos : TextView ?= null
     var buscar : Button ?= null
-
+    var mostrarTodos :TextView ?= null
+    var columns : TextView ?= null
     var basedatos = BaseDatos(this,"practica1", null, 1)
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,6 +39,9 @@ class Main2Activity : AppCompatActivity() {
         actualizar = findViewById(R.id.btnActualizarLista)
         etiquetaMos = findViewById(R.id.etiquetaMostrar)
         buscar = findViewById(R.id.btnBuscarLista)
+        mostrarTodos = findViewById(R.id.etMostrarTodos)
+        columns = findViewById(R.id.etColumns)
+        buscarGeneral()
 
         insertarLista?.setOnClickListener {
             insertar()
@@ -76,10 +80,8 @@ class Main2Activity : AppCompatActivity() {
                 SQL = SQL.replace("DESCRIPCION",editDescripLista?.text.toString())
                 SQL = SQL.replace("FECHACREACION",editFecha?.text.toString())
                 transacion.execSQL(SQL)
-                mensaje("EXITO", "SE INSERTO CORRECTAMENTE ")
                 transacion.close()
-
-                mensaje("EXITO", "SE INSERTO CORRECTAMENTE")
+                mensaje("EXITO", "SE INSERTO CORRECTAMENTE ")
                 limpiarCampos()
         }catch (err: SQLiteException){
             mensaje("Error", "NO SE PUDO INSERTAR TALVEZ EL ID YA EXISTE")
@@ -124,6 +126,7 @@ class Main2Activity : AppCompatActivity() {
                     insertarLista?.setEnabled(false)
                     buscar?.setEnabled(false)
                     regresar?.setEnabled(false)
+
                 }
             }else{
                 mensaje("ERROR","NO EXISTE EL ID")
@@ -133,10 +136,37 @@ class Main2Activity : AppCompatActivity() {
         }
     }
 
+    fun buscarGeneral(){
+        var obtenerTodasL = ""
+        try {
+            var transaccion = basedatos.readableDatabase
+            var SQL="SELECT * FROM LISTA"
+            var  respuesta = transaccion.rawQuery(SQL,null)
+            var column = "ID     "+"Descripción    "+"Fecha de creación"
+            etColumns?.setText(column)
+            if(respuesta !=null){
+                if (respuesta.moveToFirst()==true){
+                    do{
+                        obtenerTodasL +=respuesta.getString(0)+"      "+respuesta.getString(1)+"        "+respuesta.getString(2)+"\n"
+                    }while(respuesta.moveToNext())
+                    etMostrarTodos?.setText(obtenerTodasL)
+                }else{
+                    obtenerTodasL = "No hay registros para mostrar."
+                    etMostrarTodos.setText(obtenerTodasL)
+                }
+            }
+            respuesta.close()
+
+
+        }catch (err: SQLiteException){
+            mensaje("ERROR","NO se pudo ejecutar la consulta")
+        }
+    }
+
     fun actualizar(){
         try {
             var transaction = basedatos.writableDatabase
-            var SQL = "UPDATE LISTA SET DESCRIPCION='campodescrip', FECHACREACION='campofecha' WHERE IDLISTA=campoid"
+            var SQL = "UPDATE LISTA SET DESCRIPCION='campodescrip', FECHACREACION='campofecha' WHERE IDLISTA='campoid'"
             if (validarCampos()==false){
                 mensaje("ERROR","ALGUN CAMPO ESTA VACIO")
                 return
